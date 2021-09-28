@@ -24,7 +24,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:3000"
+      "applicationUrl": "http://localhost:3000/",
+      "jsWebView2Debugging": false
     },
     "Docker": {
       "commandName": "Docker",
