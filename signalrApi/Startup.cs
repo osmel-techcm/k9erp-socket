@@ -31,6 +31,7 @@ namespace signalrApi
         public IConfiguration Configuration { get; }
 
         public static string idTenant = string.Empty;
+        public static string token = string.Empty;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -84,15 +85,18 @@ namespace signalrApi
                     cfg.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
+                        {                           
                             var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/mainhub")))
-                            {                                
-                                context.Token = accessToken;
+                            if (!string.IsNullOrEmpty(context.Request.Query["access_token"]) && (path.StartsWithSegments("/mainhub")))
+                            {   
+                                token = context.Request.Query["access_token"];
+                                context.Token = token;
                             }
 
-                            idTenant = context.Request.Headers["x-tenant-id"];
+                            if (!string.IsNullOrEmpty(context.Request.Headers["x-tenant-id"]))
+                            {
+                                idTenant = context.Request.Headers["x-tenant-id"];
+                            }                            
 
                             return Task.CompletedTask;
                         }
@@ -100,6 +104,8 @@ namespace signalrApi
                 });
 
             services.AddSignalR();
+
+            services.AddHttpClient();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
